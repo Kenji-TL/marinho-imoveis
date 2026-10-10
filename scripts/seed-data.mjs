@@ -1,0 +1,158 @@
+// Dados de exemplo: 6 imóveis reais do site antigo (www.marinhoimoveis.com.br),
+// 3 para aluguel e 3 à venda. Fotos em supabase/seed/images/<pasta>/ (a 01 é a capa).
+
+export const settings = {
+  company_name: "Marinho Imóveis",
+  whatsapp: "5521997801515",
+  phone: "(21) 2463-1122",
+  email: "locacao@marinhoimoveis.com.br",
+  creci: "2267",
+  address:
+    "Rua República Árabe da Síria, 129 — Salas 315 e 316\nPortuguesa, Ilha do Governador — Rio de Janeiro/RJ\nCEP 21931-370",
+  opening_hours: null,
+  instagram_url: "https://www.instagram.com/marinhoimoveisrj/",
+  facebook_url: "https://www.facebook.com/www.marinhoimoveis.com.br",
+  about_text:
+    "Desde 1982, a Marinho Imóveis ajuda famílias da Ilha do Governador e de todo o Rio de Janeiro a comprar, vender e alugar imóveis. Somos uma empresa familiar, fundada por José Marinho de Figueiredo e Sulamita Gonçalves de Figueiredo, com departamento jurídico próprio e atendimento próximo do começo ao fim de cada negócio. A seriedade é a base de nossas atividades.",
+};
+
+export const properties = [
+  // ---------------- ALUGUEL ----------------
+  {
+    folder: "belart",
+    data: {
+      title: "Apartamento de 3 quartos com suíte e varanda no Jardim Guanabara",
+      deal_type: "rent",
+      property_type: "apartamento",
+      featured: true,
+      rent_price: 2200,
+      condo_fee: 700,
+      iptu: 108,
+      street: "Rua Almirante Luís Belart",
+      number: "110",
+      complement: "Apto 105",
+      neighborhood: "Jardim Guanabara",
+      hide_number: true,
+      bedrooms: 3,
+      suites: 1,
+      bathrooms: 3,
+      parking_spots: 2,
+      amenities: ["Varanda", "Elevador", "Dependência de empregada", "Área de serviço"],
+      description:
+        "<p>Apartamento amplo no Jardim Guanabara, um dos endereços mais procurados da Ilha do Governador.</p><ul><li>3 quartos, sendo 1 suíte com varanda</li><li>Sala com varanda</li><li>Banheiro social, cozinha e área de serviço</li><li>Dependência completa de empregada</li><li>2 vagas na garagem</li><li>Prédio com elevador</li></ul>",
+    },
+  },
+  {
+    folder: "bandeirantes",
+    data: {
+      title: "Apartamento mobiliado de 1 quarto em frente aos Estúdios Globo",
+      deal_type: "rent",
+      property_type: "apartamento",
+      featured: true,
+      rent_price: 2500,
+      condo_fee: 754.83,
+      iptu: 82.5,
+      street: "Estrada dos Bandeirantes",
+      number: "6265",
+      neighborhood: "Jacarepaguá",
+      hide_number: true,
+      bedrooms: 1,
+      suites: 0,
+      bathrooms: 1,
+      parking_spots: 1,
+      amenities: ["Mobiliado", "Piscina", "Academia"],
+      description:
+        "<p>Apartamento <strong>mobiliado e decorado</strong>, com enxoval, em excelente localização em frente aos Estúdios Globo.</p><ul><li>1 quarto, sala, cozinha e banheiro</li><li>1 vaga no parqueamento</li><li>Condomínio com restaurante, academia, piscina e serviços</li></ul>",
+    },
+  },
+  {
+    folder: "coracao",
+    data: {
+      title: "Loja de 282 m² no Méier",
+      deal_type: "rent",
+      property_type: "loja",
+      featured: false,
+      accepts_proposal: true,
+      rent_price: 3500,
+      condo_fee: null,
+      iptu: 489.41,
+      price_notes: "Taxa de água à parte.",
+      street: "Rua Coração de Maria",
+      number: "318",
+      neighborhood: "Méier",
+      hide_number: false,
+      bedrooms: 0,
+      suites: 0,
+      bathrooms: 2,
+      parking_spots: 0,
+      usable_area: 282,
+      amenities: [],
+      description:
+        "<p>Loja ampla no Méier, pronta para receber o seu negócio.</p><ul><li>282 m² de área</li><li>2 banheiros</li><li>Porta de vidro blindex e porta de ferro de enrolar</li></ul>",
+    },
+  },
+
+  // ---------------- VENDA ----------------
+  {
+    folder: "orcadas",
+    data: {
+      title: "Casa de 4 suítes com piscina e área gourmet no Jardim Carioca",
+      deal_type: "sale",
+      property_type: "casa",
+      featured: true,
+      sale_price: 1800000,
+      street: "Rua Orcadas",
+      neighborhood: "Jardim Carioca",
+      hide_number: false,
+      bedrooms: 4,
+      suites: 4,
+      bathrooms: 6,
+      parking_spots: 6,
+      usable_area: 373,
+      amenities: ["Piscina", "Churrasqueira", "Área gourmet", "Varanda", "Armários embutidos", "Área de serviço"],
+      description:
+        "<p>Casa de 4 pavimentos, modernizada, perto de shopping e comércio. <strong>373 m² de área construída.</strong></p><p><strong>1º pavimento</strong></p><ul><li>Varanda externa com piso em porcelanato</li><li>Sala ampla em 2 ambientes com teto rebaixado em gesso e iluminação embutida</li><li>2 suítes amplas com armários e closet</li><li>Banheiro social amplo</li><li>Cozinha ampla com bancada de granito e armários embutidos</li></ul><p><strong>2º pavimento</strong></p><ul><li>Sala de TV em 2 ambientes</li><li>Varanda com guarda-corpo</li><li>2 suítes com armários e closet, sendo 1 master com banheira de hidromassagem</li></ul><p><strong>3º pavimento</strong></p><ul><li>Salão em 2 ambientes com banheiro completo</li></ul><p><strong>Área externa</strong></p><ul><li>Piscina com cascata e grama sintética</li><li>Área gourmet com churrasqueira e forno de pizza a lenha</li><li>Garagem para 6 carros, sendo 3 cobertas</li><li>Lavanderia e banheiro de apoio à piscina</li></ul>",
+    },
+  },
+  {
+    folder: "ruibarbosa",
+    data: {
+      title: "Apartamento de 3 quartos com suíte em Botafogo",
+      deal_type: "sale",
+      property_type: "apartamento",
+      featured: true,
+      sale_price: 1170000,
+      street: "Rua Rui Barbosa",
+      neighborhood: "Botafogo",
+      hide_number: false,
+      bedrooms: 3,
+      suites: 1,
+      bathrooms: 2,
+      parking_spots: 1,
+      usable_area: 108,
+      amenities: ["Elevador", "Dependência de empregada", "Armários embutidos", "Área de serviço"],
+      description:
+        "<p>Apartamento de 108 m² em ótima localização.</p><ul><li>3 quartos, sendo 1 suíte</li><li>Sala e banheiro social</li><li>Cozinha planejada e área de serviço</li><li>Dependência completa de empregada</li><li>1 vaga na escritura</li><li>Prédio com elevador</li></ul>",
+    },
+  },
+  {
+    folder: "freiinocencio",
+    data: {
+      title: "Apartamento de 1 quarto na Praia da Bandeira",
+      deal_type: "sale",
+      property_type: "apartamento",
+      featured: false,
+      sale_price: 180000,
+      street: "Rua Frei Inocêncio",
+      neighborhood: "Praia da Bandeira",
+      hide_number: false,
+      bedrooms: 1,
+      suites: 0,
+      bathrooms: 1,
+      parking_spots: 1,
+      amenities: ["Área de serviço"],
+      description:
+        "<p>Apartamento no Tijolinho, na Praia da Bandeira, Ilha do Governador.</p><ul><li>1 quarto e sala</li><li>Cozinha, banheiro social e área de serviço</li><li>1 vaga no parqueamento</li></ul>",
+    },
+  },
+];

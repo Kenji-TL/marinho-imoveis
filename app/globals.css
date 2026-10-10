@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* Identidade Marinho Imóveis (ver IDENTIDADE.md) */
+@theme {
+  --color-marinho-950: #05073d;
+  --color-marinho-800: #01016e;
+  --color-marinho-700: #020098;
+  --color-marinho-600: #1b1bb3;
+  --color-marinho-100: #dfe2f7;
+  --color-marinho-50: #eef0fb;
+
+  --color-vermelho-700: #c4141f;
+  --color-vermelho-600: #e81c2b;
+  --color-vermelho-50: #fdecee;
+
+  --color-areia-100: #f7f5f0;
+  --color-areia-200: #f0ece4;
+  --color-areia-300: #e9e5dc;
+
+  --color-grafite-900: #1b1b1b;
+  --color-grafite-700: #3d3a37;
+  --color-grafite-600: #6b6763;
+
+  /* dourado dos botões de destaque (combinação azul-marinho + dourado) */
+  --color-dourado-200: #f1e2c8;
+  --color-dourado-300: #e6cba0;
+  --color-dourado-400: #d9b47e;
+  --color-dourado-500: #c99a5b;
+  --color-dourado-700: #8a6431;
+
+  --color-whatsapp-600: #15803d;
+  --color-whatsapp-700: #126c34;
+}
+
+@theme inline {
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-script: var(--font-caveat), "Segoe Script", cursive;
+}
+
+/* Na camada base, para que os componentes possam sobrescrever
+   (ex.: o card troca o contorno do link por um anel no card inteiro). */
+@layer base {
+  body {
+    background: #ffffff;
+    color: var(--color-grafite-900);
+    caret-color: var(--color-marinho-700);
+  }
+
+  ::selection {
+    background: var(--color-dourado-300);
+    color: var(--color-marinho-950);
+  }
+
+  /* Contorno de foco do teclado: azul nos fundos claros (14:1), dourado nos
+     escuros (12:1). Fundo escuro = .bg-marinho-950 ou [data-surface="dark"]. */
+  :focus-visible {
+    outline: 2px solid var(--color-marinho-700);
+    outline-offset: 2px;
+  }
+
+  .bg-marinho-950 :focus-visible,
+  [data-surface="dark"] :focus-visible {
+    outline-color: var(--color-dourado-300);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Menos movimento: as entradas e os zooms decorativos usam a variante
+   motion-safe: e somem; as transições curtas de cor e opacidade continuam,
+   porque mostram mudança de estado. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
