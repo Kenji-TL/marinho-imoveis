@@ -4,7 +4,7 @@ import { Building2, ExternalLink, KeyRound, Loader2, Save, Sparkles } from "luci
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { saveProperty } from "@/app/admin/(painel)/imoveis/actions";
+import { PUBLISH_NOTE, saveProperty } from "@/lib/admin/api";
 import type { PropertyFormInitial, PropertyFormValues } from "@/lib/admin/property-form-state";
 import { formatBRLCents, formatCep, onlyDigits } from "@/lib/format";
 import {
@@ -178,10 +178,9 @@ export function PropertyForm({
       setMeta({ code: result.code, slug: result.slug });
 
       if (result.created) {
-        router.replace(`/admin/imoveis/${result.id}?aviso=criado`);
+        router.replace(`/admin/imoveis/editar?id=${result.id}&aviso=criado-${result.publish}`);
       } else {
-        setMessage({ tone: "success", text: "Alterações salvas. O site já foi atualizado." });
-        router.refresh();
+        setMessage({ tone: "success", text: `Alterações salvas. ${PUBLISH_NOTE[result.publish]}` });
       }
     });
   }

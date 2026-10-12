@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
-import { deleteProperty } from "@/app/admin/(painel)/imoveis/actions";
+import { deleteProperty } from "@/lib/admin/api";
 import { ConfirmDialog } from "./confirm-dialog";
 
 export function DeletePropertyButton({

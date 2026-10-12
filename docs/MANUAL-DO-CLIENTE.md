@@ -1,6 +1,8 @@
 # Manual do painel — Marinho Imóveis
 
-O painel é onde você cadastra os imóveis, troca as fotos e muda as informações do site. Tudo o que você salva aparece no site na hora. Funciona no computador e no celular.
+O painel é onde você cadastra os imóveis, troca as fotos e muda as informações do site. Funciona no computador e no celular.
+
+**Quando aparece no site:** tudo o que você salva aparece no site em **uns 3 minutos**. No alto do painel aparece "Atualizando o site…" e, quando termina, "Site atualizado".
 
 **Endereço do painel:** `www.marinhoimoveis.com.br/admin`
 
@@ -31,7 +33,7 @@ O painel é onde você cadastra os imóveis, troca as fotos e muda as informaç�
    - **Escolher fotos** pega as fotos da galeria.
    - Toque na **estrela** para escolher a foto de capa, a primeira que aparece no site.
    - Para mudar a ordem, segure a foto e arraste.
-9. Toque em **Cadastrar imóvel**. Pronto: o imóvel já está no site.
+9. Toque em **Cadastrar imóvel**. Pronto: em uns 3 minutos o imóvel aparece no site.
 
 **Dica de foto:** fotografe com o celular na horizontal, de dia, com as luzes acesas e as janelas abertas. A capa é a foto mais importante.
 
@@ -44,7 +46,7 @@ Em **Imóveis**, toque no imóvel, mude o que precisar e toque em **Salvar alter
 | Quero… | Faça assim |
 |---|---|
 | Avisar que o imóvel está reservado | Em **Situação**, escolha **Reservado**. |
-| Tirar do site porque alugou ou vendeu | Em **Situação**, escolha **Alugado** ou **Vendido**. |
+| Tirar do site porque alugou ou vendeu | Em **Situação**, escolha **Alugado** ou **Vendido**. O anúncio sai do site. As fotos ficam guardadas por 30 dias, caso o negócio desande, e depois são apagadas sozinhas. |
 | Esconder do site sem apagar | Desligue **Mostrar no site**. |
 | Colocar na página inicial | Ligue **Destaque na página inicial**. |
 | Cadastrar outro parecido (mesmo prédio) | Na lista, toque em **⋮** → **Duplicar**. A cópia fica escondida até você revisar. |
@@ -87,6 +89,7 @@ O painel sempre precisa de pelo menos um dono. Por segurança, tenha **dois dono
 
 ## Dúvidas comuns
 
-- **Salvei e não apareceu no site.** Atualize a página do site. Se continuar, confira se **Mostrar no site** está ligado.
+- **Salvei e não apareceu no site.** Espere uns 3 minutos e atualize a página do site. Confira também se **Mostrar no site** está ligado. Se o alto do painel mostrar "O site não atualizou", salve de novo e, se continuar, avise quem cuida do site.
+- **Um imóvel que voltou a ficar disponível está sem fotos.** As fotos de imóveis vendidos ou alugados são apagadas 30 dias depois. Envie as fotos de novo.
 - **A foto não sobe.** Confira a internet. Se aparecer "Sem conexão", toque em **Tentar de novo** na foto.
 - **O e-mail de senha não chegou.** Confira o spam e espere alguns minutos. Se não chegar, peça a outro dono para criar uma senha provisória para você em **Equipe**.

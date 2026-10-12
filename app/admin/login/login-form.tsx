@@ -1,18 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
-import { login, type LoginState } from "../actions";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useActionState, useEffect, useState } from "react";
+import { login, type LoginState } from "@/lib/admin/api";
+import { safeAdminPath } from "@/lib/admin/roles";
+import { createClient } from "@/lib/supabase/client";
+
+const ERRORS: Record<string, string> = {
+  "sem-acesso": "Esta conta não tem acesso ao painel.",
+  "link-invalido": "Esse link expirou ou já foi usado. Peça um novo em “Esqueci minha senha”.",
+};
+
+/** Lê o destino e o aviso da URL; quem já entrou vai direto para o painel */
+export function LoginFromUrl() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const next = safeAdminPath(params.get("next"));
+  const erro = params.get("erro");
+
+  useEffect(() => {
+    if (erro) return;
+    createClient()
+      .auth.getSession()
+      .then(({ data }) => data.session && router.replace(next));
+  }, [erro, next, router]);
+
+  return <LoginForm next={next} initialError={erro ? ERRORS[erro] : undefined} />;
+}
 
 export function LoginForm({ next, initialError }: { next: string; initialError?: string }) {
-  const [state, action, pending] = useActionState<LoginState, FormData>(login, undefined);
+  const router = useRouter();
+  const [state, action, pending] = useActionState<LoginState, FormData>(async (prev, formData) => {
+    const result = await login(prev, formData);
+    if (!result) router.replace(next);
+    return result;
+  }, undefined);
   const [showPassword, setShowPassword] = useState(false);
   const error = state?.error ?? initialError;
 
   return (
     <form action={action} className="space-y-5" noValidate>
-      <input type="hidden" name="next" value={next} />
-
       <div className="space-y-1.5">
         <label htmlFor="email" className="block text-sm font-medium text-grafite-700">
           E-mail

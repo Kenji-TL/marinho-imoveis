@@ -18,12 +18,10 @@ export function PriceCard({
   p,
   whatsappHref,
   phone,
-  closed,
 }: {
   p: PriceFields;
   whatsappHref: string;
   phone: string | null;
-  closed: boolean;
 }) {
   const rent = p.deal_type === "rent";
   const main = rent ? p.rent_price : p.sale_price;
@@ -75,7 +73,7 @@ export function PriceCard({
           className="flex items-center justify-center gap-2.5 rounded-full bg-whatsapp-600 px-5 py-4 text-base font-semibold text-white shadow-lg shadow-whatsapp-600/25 transition hover:bg-whatsapp-700"
         >
           <WhatsappIcon className="size-6" />
-          {closed ? "Quero opções parecidas" : "Tenho interesse"}
+          Tenho interesse
         </a>
         {phone && (
           <a

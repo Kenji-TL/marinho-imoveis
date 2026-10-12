@@ -1,0 +1,28 @@
+# Configuração do login (Supabase Auth) do projeto.
+# Só o que está declarado aqui é aplicado; o resto do projeto não muda.
+# Conferir: npx supabase config diff · Aplicar: npx supabase config push
+# Ao trocar o endereço do site (domínio próprio), atualize site_url e
+# additional_redirect_urls e rode o push de novo.
+project_id = "marinho-imoveis"
+
+[auth]
+site_url = "https://previa-marinho-moveis.l-nica--eterin-ria--illage.workers.dev"
+additional_redirect_urls = [
+  "https://previa-marinho-moveis.l-nica--eterin-ria--illage.workers.dev/auth/confirm",
+  "http://localhost:8787/auth/confirm",
+  "http://localhost:3000/auth/confirm",
+]
+# Ninguém cria conta sozinho: o dono adiciona as pessoas em Equipe
+enable_signup = false
+
+# Modelos dos e-mails em português. O plano grátis só deixa trocar os modelos
+# depois de configurar um serviço de e-mail próprio (SMTP, ver README). Até lá,
+# os e-mails saem no modelo padrão do Supabase, que o site também entende.
+# Com o SMTP configurado, tire o "#" das linhas abaixo e rode o push.
+# [auth.email.template.invite]
+# subject = "Seu acesso ao painel da Marinho Imóveis"
+# content_path = "./supabase/templates/convite.html"
+#
+# [auth.email.template.recovery]
+# subject = "Crie uma senha nova — Marinho Imóveis"
+# content_path = "./supabase/templates/senha.html"

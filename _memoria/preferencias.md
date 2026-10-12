@@ -6,4 +6,6 @@
 
 ## O que evitar
 
+- Infraestrutura com mensalidade pro cliente: preferir planos grátis, sem limites que exijam acompanhamento.
+
 ## Estilo geral

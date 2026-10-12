@@ -1,4 +1,5 @@
 import { PROPERTY_TYPES, type DealType, type PropertyType } from "@/lib/property-options";
+import type { PropertyCardData } from "./queries";
 
 export type PriceRange = { key: string; label: string; min?: number; max?: number };
 
@@ -63,6 +64,35 @@ export function parseListingParams(deal: DealType, params: RawParams): ListingFi
     ordem: SORT_OPTIONS.some((o) => o.key === ordem) ? (ordem as SortKey) : "recentes",
     pagina: Math.max(1, Math.min(500, Number(str(params.pagina)) || 1)),
   };
+}
+
+export const LISTING_PAGE_SIZE = 12;
+
+/** Filtra, ordena e pagina os imóveis da listagem (no navegador) */
+export function applyListingFilters(cards: PropertyCardData[], filters: ListingFilters) {
+  const priceOf = (p: PropertyCardData) => (filters.deal === "rent" ? p.rent_price : p.sale_price);
+  const range = PRICE_RANGES[filters.deal].find((r) => r.key === filters.preco);
+
+  const found = cards.filter((p) => {
+    if (filters.tipo && p.property_type !== filters.tipo) return false;
+    if (filters.bairro && p.neighborhood !== filters.bairro) return false;
+    if (filters.quartos && p.bedrooms < filters.quartos) return false;
+    if (filters.vagas && p.parking_spots < filters.vagas) return false;
+    const price = priceOf(p);
+    if (range?.min != null && (price == null || price <= range.min)) return false;
+    if (range?.max != null && (price == null || price > range.max)) return false;
+    return true;
+  });
+
+  const byDate = (a: PropertyCardData, b: PropertyCardData) => b.created_at.localeCompare(a.created_at);
+  const byPrice = (dir: 1 | -1) => (a: PropertyCardData, b: PropertyCardData) =>
+    ((priceOf(a) ?? 0) - (priceOf(b) ?? 0)) * dir || byDate(a, b);
+  found.sort(filters.ordem === "menor-preco" ? byPrice(1) : filters.ordem === "maior-preco" ? byPrice(-1) : byDate);
+
+  const pageCount = Math.max(1, Math.ceil(found.length / LISTING_PAGE_SIZE));
+  const page = Math.min(filters.pagina, pageCount);
+  const from = (page - 1) * LISTING_PAGE_SIZE;
+  return { items: found.slice(from, from + LISTING_PAGE_SIZE), total: found.length, page, pageCount };
 }
 
 /** Monta a URL da listagem com os filtros (sem os vazios) */

@@ -1,10 +1,8 @@
 "use client";
 
 import { KeyRound, Loader2, Mail, Plus, RefreshCw, Trash2, UserPlus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { addMember, changeMemberRole, removeMember, sendAccessLink, type TeamResult } from "@/app/admin/(painel)/equipe/actions";
-import type { TeamMember } from "@/lib/admin/queries";
+import { addMember, changeMemberRole, removeMember, sendAccessLink, type TeamMember, type TeamResult } from "@/lib/admin/api";
 import { formatDate } from "@/lib/format";
 import { ConfirmDialog } from "./confirm-dialog";
 import { buttonPrimary, buttonSecondary, Field, inputClass, Notice } from "./ui";
@@ -25,8 +23,17 @@ function randomPassword() {
 
 const EMPTY = { name: "", email: "", role: "corretor" as Role, mode: "senha" as "senha" | "convite", password: "" };
 
-export function TeamManager({ members, canManage, meId }: { members: TeamMember[]; canManage: boolean; meId: string }) {
-  const router = useRouter();
+export function TeamManager({
+  members,
+  canManage,
+  meId,
+  onChanged,
+}: {
+  members: TeamMember[];
+  canManage: boolean;
+  meId: string;
+  onChanged: (change?: { demotedMe: boolean }) => void;
+}) {
   const [form, setForm] = useState<typeof EMPTY | null>(null);
   const [errors, setErrors] = useState<Partial<Record<string, string>>>({});
   const [message, setMessage] = useState<{ tone: "success" | "error"; text: string } | null>(null);
@@ -42,7 +49,7 @@ export function TeamManager({ members, canManage, meId }: { members: TeamMember[
       setBusy(null);
       setMessage({ tone: result.ok ? "success" : "error", text: result.message });
       after?.(result);
-      if (result.ok) router.refresh();
+      if (result.ok) onChanged();
     });
   };
 
@@ -58,8 +65,8 @@ export function TeamManager({ members, canManage, meId }: { members: TeamMember[
     <div className="space-y-6">
       {!canManage && (
         <Notice tone="error">
-          Para adicionar e remover pessoas, falta cadastrar a chave secreta do Supabase no servidor
-          (<code>SUPABASE_SECRET_KEY</code>). O passo a passo está no README, em “Equipe do painel”.
+          Para adicionar e remover pessoas, falta configurar o serviço do painel na Cloudflare, com a chave secreta
+          do Supabase (<code>SUPABASE_SECRET_KEY</code>). O passo a passo está no README.
         </Notice>
       )}
       {message && <Notice tone={message.tone}>{message.text}</Notice>}
@@ -187,7 +194,13 @@ export function TeamManager({ members, canManage, meId }: { members: TeamMember[
                   value={m.role}
                   disabled={pending || lastOwner}
                   title={lastOwner ? "É preciso ter pelo menos um dono" : undefined}
-                  onChange={(e) => run(`role-${m.user_id}`, () => changeMemberRole(m.user_id, e.target.value as Role))}
+                  onChange={(e) => {
+                    const role = e.target.value as Role;
+                    run(`role-${m.user_id}`, () => changeMemberRole(m.user_id, role), (r) => {
+                      // Quem tirou o próprio acesso de dono não pode mais ficar nesta tela
+                      if (r.ok && isMe && role !== "dono") onChanged({ demotedMe: true });
+                    });
+                  }}
                   className="h-10 rounded-lg border border-areia-300 bg-white px-3 text-sm text-grafite-900 outline-none focus:border-marinho-700 focus:ring-2 focus:ring-marinho-100 disabled:bg-areia-100 disabled:text-grafite-600"
                 >
                   <option value="dono">Dono</option>

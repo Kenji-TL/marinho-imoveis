@@ -4,7 +4,7 @@ import { Copy, Eye, EyeOff, ExternalLink, MoreVertical, Pencil, Trash2 } from "l
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { deleteProperty, duplicateProperty, setPropertyVisibility } from "@/app/admin/(painel)/imoveis/actions";
+import { deleteProperty, duplicateProperty, setPropertyVisibility } from "@/lib/admin/api";
 import { ConfirmDialog } from "./confirm-dialog";
 
 export function PropertyRowActions({
@@ -12,11 +12,13 @@ export function PropertyRowActions({
   slug,
   title,
   visible,
+  onChanged,
 }: {
   id: string;
   slug: string;
   title: string;
   visible: boolean;
+  onChanged: () => void;
 }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -40,13 +42,23 @@ export function PropertyRowActions({
     };
   }, [menuOpen]);
 
-  const run = (fn: () => Promise<{ ok: boolean; message?: string } | void>) => {
+  const run = (fn: () => Promise<{ ok: boolean; message?: string }>) => {
     setMenuOpen(false);
     setError(null);
     startTransition(async () => {
       const result = await fn();
-      if (result && !result.ok) setError(result.message ?? "Algo deu errado.");
-      else router.refresh();
+      if (!result.ok) setError(result.message ?? "Algo deu errado.");
+      else onChanged();
+    });
+  };
+
+  const duplicate = () => {
+    setMenuOpen(false);
+    setError(null);
+    startTransition(async () => {
+      const result = await duplicateProperty(id);
+      if (!result.ok) setError(result.message);
+      else router.push(`/admin/imoveis/editar?id=${result.id}&aviso=duplicado`);
     });
   };
 
@@ -55,7 +67,7 @@ export function PropertyRowActions({
   return (
     <div className="flex items-center gap-1">
       <Link
-        href={`/admin/imoveis/${id}`}
+        href={`/admin/imoveis/editar?id=${id}`}
         className="hidden items-center gap-1.5 rounded-lg border border-areia-300 px-3 py-2 text-sm font-semibold text-marinho-700 hover:border-marinho-700 sm:inline-flex"
       >
         <Pencil className="size-4" aria-hidden /> Editar
@@ -75,7 +87,7 @@ export function PropertyRowActions({
         </button>
         {menuOpen && (
           <div role="menu" className="absolute right-0 z-30 mt-1 w-52 overflow-hidden rounded-lg border border-areia-300 bg-white py-1 shadow-lg">
-            <button role="menuitem" type="button" className={item} onClick={() => run(() => duplicateProperty(id))}>
+            <button role="menuitem" type="button" className={item} onClick={duplicate}>
               <Copy className="size-4 text-grafite-600" aria-hidden /> Duplicar
             </button>
             <button role="menuitem" type="button" className={item} onClick={() => run(() => setPropertyVisibility(id, !visible))}>
@@ -119,7 +131,7 @@ export function PropertyRowActions({
             const result = await deleteProperty(id);
             setConfirmDelete(false);
             if (!result.ok) setError(result.message);
-            else router.refresh();
+            else onChanged();
           })
         }
       >

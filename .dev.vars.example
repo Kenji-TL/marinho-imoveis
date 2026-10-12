@@ -1,0 +1,15 @@
+# Copie para .dev.vars: configuração do serviço do painel (Cloudflare) no seu
+# computador, usada pelo `npm run preview` (wrangler dev). Na publicação, estes
+# valores vêm dos segredos do GitHub.
+
+SUPABASE_URL=https://abcdefghijkl.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
+SITE_URL=http://localhost:8787
+
+# Opcional: publicação automática (token da GitHub com permissão Actions: Read and write)
+# GITHUB_TOKEN=github_pat_...
+# GITHUB_REPO=sua-conta/marinho-imoveis
+
+# Opcional: deixa o `npm run dev` (porta 3000) chamar o serviço do painel
+# DEV_ORIGIN=http://localhost:3000

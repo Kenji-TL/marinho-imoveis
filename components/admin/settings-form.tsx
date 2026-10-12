@@ -2,7 +2,7 @@
 
 import { Loader2, MessageCircle, Save } from "lucide-react";
 import { useActionState, useState } from "react";
-import { saveSettings, type SettingsState } from "@/app/admin/(painel)/configuracoes/actions";
+import { saveSettings, type SettingsState } from "@/lib/admin/api";
 import type { Tables } from "@/lib/database.types";
 import { formatPhone, normalizeWhatsapp } from "@/lib/format";
 import { buttonPrimary, Field, inputClass, Notice, Section } from "./ui";

@@ -79,4 +79,3 @@ export const AMENITIES = [
 ] as const;
 
 export const MAX_PHOTOS = 40;
-export const PHOTOS_BUCKET = "property-images";

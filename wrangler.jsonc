@@ -1,0 +1,21 @@
+// Configuração do site na Cloudflare (Workers, plano grátis).
+// Os valores de cada instalação (endereço do Supabase, chaves, GitHub) não
+// ficam aqui: vêm dos segredos do GitHub na publicação (.github/workflows)
+// e, no computador, do arquivo .dev.vars (veja .dev.vars.example).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "marinho-imoveis",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    // Endereço que não existe: mostra o 404.html mais próximo
+    // (em /imovel/... é o "anúncio indisponível")
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  // Manutenção diária, às 6h (UTC) = 3h em Brasília
+  "triggers": { "crons": ["0 6 * * *"] },
+  "observability": { "enabled": true }
+}

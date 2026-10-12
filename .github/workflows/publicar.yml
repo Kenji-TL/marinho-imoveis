@@ -1,0 +1,98 @@
+# Gera o site (páginas prontas) a partir do banco e publica na Cloudflare.
+# Roda quando:
+#   - o painel salva algo (o serviço do painel pede pela API da GitHub)
+#   - chega código novo na main
+#   - alguém clica em "Run workflow" na aba Actions
+# Configuração (Settings → Secrets and variables → Actions), passo a passo no README.
+
+name: Publicar o site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Uma publicação por vez. Pedidos que chegam durante uma publicação viram um
+# só (o mais novo), que roda logo depois.
+concurrency:
+  group: publicar
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Conferir a configuração
+        run: |
+          faltando=""
+          for nome in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_PUBLISHABLE_KEY SUPABASE_SECRET_KEY SITE_URL; do
+            [ -z "${!nome}" ] && faltando="$faltando $nome"
+          done
+          if [ -n "$faltando" ]; then
+            echo "::error::Falta cadastrar no GitHub (Settings → Secrets and variables → Actions):$faltando. Veja o README."
+            exit 1
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SITE_URL: ${{ vars.SITE_URL }}
+
+      - run: npm ci
+
+      # Fotos baixadas nas publicações anteriores: a cada publicação, só as
+      # fotos novas saem do Supabase
+      - name: Fotos já baixadas
+        uses: actions/cache@v4
+        with:
+          path: .fotos-cache
+          key: fotos-${{ github.run_id }}
+          restore-keys: fotos-
+
+      - name: Gerar as páginas
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL }}
+
+      # Variável FORA_DO_GOOGLE = true: para prévias, que não devem aparecer
+      # nas buscas (o site oficial deixa essa variável vazia)
+      - name: Prévia fora do Google
+        if: ${{ vars.FORA_DO_GOOGLE == 'true' }}
+        run: |
+          printf '/*\n  X-Robots-Tag: noindex\n' > out/_headers
+
+      - name: Publicar na Cloudflare
+        run: |
+          # Configuração do serviço do painel, enviada como segredos da Cloudflare
+          node -e '
+            const pick = (names) => Object.fromEntries(names.filter((n) => process.env[n]).map((n) => [n, process.env[n]]));
+            require("fs").writeFileSync(".segredos.json", JSON.stringify(pick([
+              "SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY",
+              "SITE_URL", "GITHUB_TOKEN", "GITHUB_REPO", "GITHUB_BRANCH",
+            ])));
+          '
+          # NOME_NA_CLOUDFLARE: nome do site na Cloudflare (vazio = o do wrangler.jsonc)
+          npx wrangler deploy ${NOME_NA_CLOUDFLARE:+--name "$NOME_NA_CLOUDFLARE"} --secrets-file .segredos.json
+          rm -f .segredos.json
+        env:
+          NOME_NA_CLOUDFLARE: ${{ vars.NOME_NA_CLOUDFLARE }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          GITHUB_TOKEN: ${{ secrets.PUBLICAR_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_BRANCH: ${{ github.event.repository.default_branch }}

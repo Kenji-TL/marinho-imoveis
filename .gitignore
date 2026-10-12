@@ -34,6 +34,14 @@ yarn-error.log*
 .env*
 !.env.example
 
+# cloudflare (wrangler): segredos locais e dados do modo de desenvolvimento
+.dev.vars*
+!.dev.vars.example
+.wrangler/
+
+# fotos baixadas do Storage na publicação (scripts/baixar-fotos.mjs)
+.fotos-cache/
+
 # vercel
 .vercel
 
@@ -46,3 +54,6 @@ next-env.d.ts
 
 # cache local do analisador de design (Impeccable)
 .impeccable/hook.cache.json
+
+# ligação local com o projeto do Supabase (npx supabase link)
+supabase/.temp/

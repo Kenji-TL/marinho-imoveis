@@ -1,5 +1,4 @@
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { formatPhone } from "@/lib/format";
 import { getSettings } from "@/lib/public/queries";
@@ -25,8 +24,6 @@ const TYPE_LINKS = [
 ];
 
 export async function SiteFooter() {
-  "use cache";
-  cacheLife("days");
   const s = await getSettings();
   const year = new Date().getFullYear();
   const whatsapp = whatsappLink(s.whatsapp, GENERIC_WHATSAPP_MESSAGE);

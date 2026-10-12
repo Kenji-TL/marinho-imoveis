@@ -5,8 +5,8 @@ import type { Database } from "@/lib/database.types";
 import { supabaseEnv } from "./env";
 
 /**
- * Cliente anônimo, sem cookies, para as páginas públicas. Por não depender
- * da requisição, pode ser usado dentro de funções com "use cache".
+ * Cliente anônimo, sem sessão. Lê os dados do site público na publicação
+ * (build), com a chave publicável.
  */
 export function createPublicClient() {
   const { url, key } = supabaseEnv();

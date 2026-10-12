@@ -1,6 +1,7 @@
 import type { PhotoItem } from "@/components/admin/photo-manager";
 import type { DealType, PropertyStatus, PropertyType } from "@/lib/property-options";
-import type { PropertyForEdit } from "./queries";
+import { storageSmallPhotoUrl } from "@/lib/photos";
+import type { PropertyForEdit } from "./api";
 
 export type PropertyFormValues = {
   deal_type: DealType | "";
@@ -121,7 +122,7 @@ export function toFormInitial(p: PropertyForEdit): PropertyFormInitial {
     photos: p.images.map((img) => ({
       id: img.id,
       storage_path: img.storage_path,
-      preview: img.url,
+      preview: storageSmallPhotoUrl(img.storage_path),
       width: img.width,
       height: img.height,
       status: "done",

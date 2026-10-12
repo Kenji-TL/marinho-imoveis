@@ -28,7 +28,7 @@ export function PropertyCard({ p, eager = false }: { p: PropertyCardData; eager?
       <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-areia-200">
         {p.cover ? (
           <Image
-            src={p.cover.url}
+            src={p.cover.thumb}
             alt={p.title}
             fill
             sizes="(min-width: 1280px) 300px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"

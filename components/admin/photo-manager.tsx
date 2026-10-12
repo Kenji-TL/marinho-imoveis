@@ -14,10 +14,9 @@ import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordi
 import { CSS } from "@dnd-kit/utilities";
 import { Camera, ImagePlus, Loader2, RotateCcw, Star, Trash2, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { discardUploadedPhoto } from "@/app/admin/(painel)/imoveis/actions";
+import { discardUploadedPhoto, uploadPhoto } from "@/lib/admin/api";
 import { compressImage } from "@/lib/image-compress";
-import { MAX_PHOTOS, PHOTOS_BUCKET } from "@/lib/property-options";
-import { createClient } from "@/lib/supabase/client";
+import { MAX_PHOTOS } from "@/lib/property-options";
 import { buttonSecondary } from "./ui";
 
 export type PhotoItem = {
@@ -85,12 +84,10 @@ export function PhotoManager({
       return;
     }
     const path = `${getPropertyId()}/${id}.jpg`;
-    const { error: uploadError } = await createClient()
-      .storage.from(PHOTOS_BUCKET)
-      .upload(path, compressed.blob, { contentType: "image/jpeg", cacheControl: "31536000", upsert: true })
-      .catch((e: unknown) => ({ error: e instanceof Error ? e : new Error(String(e)) }));
-    if (uploadError) {
-      const offline = /fetch|network|load failed/i.test(uploadError.message);
+    try {
+      await uploadPhoto(path, compressed.blob, compressed.small);
+    } catch (e) {
+      const offline = e instanceof Error && /conexão/i.test(e.message);
       update(id, { status: "error", error: offline ? "Sem conexão. Verifique a internet." : "Não foi possível enviar esta foto." });
       return;
     }

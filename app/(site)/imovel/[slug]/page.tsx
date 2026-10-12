@@ -1,8 +1,7 @@
-import { Bath, BedDouble, Car, Check, DoorOpen, Info, MapPin, Maximize, Ruler } from "lucide-react";
+import { Bath, BedDouble, Car, Check, DoorOpen, MapPin, Maximize, Ruler } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, permanentRedirect } from "next/navigation";
-import { Suspense } from "react";
+import { notFound } from "next/navigation";
 import { Gallery } from "@/components/site/gallery";
 import { LocationMap } from "@/components/site/location-map";
 import { monthlyTotal, PriceCard } from "@/components/site/price-card";
@@ -14,52 +13,39 @@ import { formatArea, formatBRL } from "@/lib/format";
 import { PROPERTY_TYPE_LABEL, STATUS_LABEL } from "@/lib/property-options";
 import { getPropertyBySlug, getPublishedSlugs, getSettings, getSimilarProperties } from "@/lib/public/queries";
 import { sanitizeDescription } from "@/lib/sanitize";
-import { GENERIC_WHATSAPP_MESSAGE, propertyWhatsappMessage, whatsappLink } from "@/lib/whatsapp";
+import { propertyWhatsappMessage, whatsappLink } from "@/lib/whatsapp";
+
+// Uma página pronta por imóvel anunciado. Endereços que não existem (imóvel
+// vendido, alugado, oculto ou com título trocado) caem em /imovel/404.
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const slugs = await getPublishedSlugs();
-  // O Next exige ao menos um endereço; imóveis novos são gerados na primeira visita
-  return slugs.length ? slugs.map((slug) => ({ slug })) : [{ slug: "imovel-mi-0000" }];
+  // O Next exige ao menos um endereço, mesmo sem nenhum imóvel anunciado
+  return slugs.length ? slugs.map((slug) => ({ slug })) : [{ slug: "sem-imoveis" }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/imovel/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const result = await getPropertyBySlug(slug);
-  if (!result) return { title: "Imóvel não encontrado" };
-  const p = result.property;
+  const p = await getPropertyBySlug(slug);
+  if (!p) return { title: "Imóvel não encontrado" };
   const price = p.deal_type === "rent" ? p.rent_price : p.sale_price;
   return {
     title: p.title,
     description: `${p.deal_type === "rent" ? "Aluguel" : "Venda"} · ${PROPERTY_TYPE_LABEL[p.property_type]} em ${p.neighborhood}, ${p.city}${
       price != null ? ` · ${formatBRL(price)}${p.deal_type === "rent" ? "/mês" : ""}` : ""
     }. Código ${p.code}.`,
-    alternates: { canonical: `/imovel/${result.canonicalSlug}` },
+    alternates: { canonical: `/imovel/${p.slug}` },
   };
 }
 
-export default function PropertyPage({ params }: PageProps<"/imovel/[slug]">) {
-  return (
-    <Suspense fallback={<PropertySkeleton />}>
-      <PropertyContent params={params} />
-    </Suspense>
-  );
-}
-
-async function PropertyContent({ params }: Pick<PageProps<"/imovel/[slug]">, "params">) {
+export default async function PropertyPage({ params }: PageProps<"/imovel/[slug]">) {
   const { slug } = await params;
-  const [result, settings] = await Promise.all([getPropertyBySlug(slug), getSettings()]);
-  if (!result) notFound();
-  if (result.canonicalSlug !== slug) permanentRedirect(`/imovel/${result.canonicalSlug}`);
+  const [p, settings] = await Promise.all([getPropertyBySlug(slug), getSettings()]);
+  if (!p) notFound();
 
-  const p = result.property;
-  const closed = p.status === "rented" || p.status === "sold";
   const rent = p.deal_type === "rent";
-  const whatsappHref = whatsappLink(
-    settings.whatsapp,
-    closed
-      ? `${GENERIC_WHATSAPP_MESSAGE} Vi o imóvel ${p.title} (código ${p.code}), que já foi ${rent ? "alugado" : "vendido"}, e gostaria de opções parecidas.`
-      : propertyWhatsappMessage(p),
-  );
+  const whatsappHref = whatsappLink(settings.whatsapp, propertyWhatsappMessage(p));
   const address = [p.street && (p.number && !p.hide_number ? `${p.street}, ${p.number}` : p.street), p.neighborhood, `${p.city}/${p.state}`]
     .filter(Boolean)
     .join(" · ");
@@ -98,20 +84,13 @@ async function PropertyContent({ params }: Pick<PageProps<"/imovel/[slug]">, "pa
           </p>
         </header>
 
-        {closed && (
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-            <Info className="mt-0.5 size-5 shrink-0" aria-hidden />
-            Este imóvel já foi {rent ? "alugado" : "vendido"}. Veja abaixo opções parecidas ou fale com a gente.
-          </div>
-        )}
-
         <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div className="min-w-0 space-y-12">
             <Gallery photos={p.images} title={p.title} />
 
             {/* Valores no celular, logo abaixo das fotos (no desktop ficam na lateral) */}
             <div className="lg:hidden">
-              <PriceCard p={p} whatsappHref={whatsappHref} phone={settings.phone} closed={closed} />
+              <PriceCard p={p} whatsappHref={whatsappHref} phone={settings.phone} />
             </div>
 
             {facts.length > 0 && (
@@ -178,16 +157,14 @@ async function PropertyContent({ params }: Pick<PageProps<"/imovel/[slug]">, "pa
 
           <aside className="hidden lg:block">
             <div className="sticky top-28">
-              <PriceCard p={p} whatsappHref={whatsappHref} phone={settings.phone} closed={closed} />
+              <PriceCard p={p} whatsappHref={whatsappHref} phone={settings.phone} />
             </div>
           </aside>
         </div>
 
       </div>
 
-      <Suspense>
-        <Similar property={p} />
-      </Suspense>
+      <Similar property={p} />
 
       {/* Barra fixa do WhatsApp no celular */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-areia-300 bg-white/95 px-4 py-3 backdrop-blur lg:hidden">
@@ -208,7 +185,7 @@ async function PropertyContent({ params }: Pick<PageProps<"/imovel/[slug]">, "pa
             className="flex shrink-0 items-center gap-2 rounded-full bg-whatsapp-600 px-5 py-3.5 font-semibold text-white shadow-lg transition hover:bg-whatsapp-700"
           >
             <WhatsappIcon className="size-5" />
-            {closed ? "Ver parecidos" : "Tenho interesse"}
+            Tenho interesse
           </a>
         </div>
       </div>
@@ -240,19 +217,5 @@ async function Similar({ property }: { property: Parameters<typeof getSimilarPro
         </div>
       </div>
     </section>
-  );
-}
-
-function PropertySkeleton() {
-  return (
-    <div className="mx-auto max-w-7xl px-4 pt-6 pb-16 sm:px-6" aria-hidden>
-      <div className="h-4 w-48 animate-pulse rounded bg-areia-200" />
-      <div className="mt-6 h-10 w-3/4 animate-pulse rounded bg-areia-200" />
-      <div className="mt-3 h-5 w-1/2 animate-pulse rounded bg-areia-200" />
-      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="aspect-[16/10] animate-pulse rounded-2xl bg-areia-200" />
-        <div className="hidden h-96 animate-pulse rounded-2xl bg-areia-200 lg:block" />
-      </div>
-    </div>
   );
 }

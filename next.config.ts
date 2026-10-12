@@ -1,20 +1,11 @@
 import type { NextConfig } from "next";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : undefined;
-// Supabase rodando no próprio computador (CLI local)
-const isLocalSupabase = supabaseHost === "localhost" || supabaseHost === "127.0.0.1";
-
+// O site é gerado como páginas prontas (pasta out/), servidas pela Cloudflare.
+// As fotos já chegam do painel no tamanho certo (grande e pequena), então não
+// passam por otimização de imagem.
 const nextConfig: NextConfig = {
-  cacheComponents: true,
-  partialPrefetching: true,
-  images: {
-    remotePatterns: supabaseUrl
-      ? [new URL(`${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/**`)]
-      : [],
-    dangerouslyAllowLocalIP: isLocalSupabase,
-    formats: ["image/avif", "image/webp"],
-  },
+  output: "export",
+  images: { unoptimized: true },
   turbopack: {
     rules: {
       "*.css": {

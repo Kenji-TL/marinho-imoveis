@@ -8,6 +8,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/comprar" },
 };
 
-export default function SalePage({ searchParams }: PageProps<"/comprar">) {
-  return <ListingPage deal="sale" searchParams={searchParams} />;
+export default function SalePage() {
+  return <ListingPage deal="sale" />;
 }

@@ -14,7 +14,7 @@ const LINKS = [
 ];
 
 /** Menu com a aba atual destacada (lê a URL, por isso fica dentro de Suspense) */
-export function AdminNav({ role }: { role: Role }) {
+export function AdminNav({ role }: { role: Role | null }) {
   return <AdminNavLinks pathname={usePathname()} role={role} />;
 }
 

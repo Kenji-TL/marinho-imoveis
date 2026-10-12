@@ -2,13 +2,32 @@
 
 import { Loader2 } from "lucide-react";
 import { useActionState } from "react";
-import { changeMyPassword, updateMyName, type AccountState } from "@/app/admin/(painel)/conta/actions";
+import { changeMyPassword, updateMyName, type AccountState } from "@/lib/admin/api";
 import { PASSWORD_MIN } from "@/lib/validation/team";
 import { buttonPrimary, Field, inputClass, Notice, Section } from "./ui";
 
-export function AccountForms({ name, email, roleLabel }: { name: string | null; email: string; roleLabel: string }) {
-  const [nameState, nameAction, namePending] = useActionState<AccountState, FormData>(updateMyName, undefined);
-  const [passState, passAction, passPending] = useActionState<AccountState, FormData>(changeMyPassword, undefined);
+export function AccountForms({
+  userId,
+  name,
+  email,
+  roleLabel,
+  onNameChanged,
+}: {
+  userId: string;
+  name: string | null;
+  email: string;
+  roleLabel: string;
+  onNameChanged: () => void;
+}) {
+  const [nameState, nameAction, namePending] = useActionState<AccountState, FormData>(async (_prev, formData) => {
+    const result = await updateMyName(userId, formData);
+    if (result?.ok) onNameChanged();
+    return result;
+  }, undefined);
+  const [passState, passAction, passPending] = useActionState<AccountState, FormData>(
+    (_prev, formData) => changeMyPassword(email, formData),
+    undefined,
+  );
   const passErrors = passState && !passState.ok ? passState.errors ?? {} : {};
 
   return (

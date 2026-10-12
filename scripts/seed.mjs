@@ -45,16 +45,19 @@ for (const { folder, data } of properties) {
   for (const [index, file] of files.entries()) {
     const buffer = fs.readFileSync(path.join(imagesDir, folder, file));
     const storagePath = `${property.id}/${randomUUID()}.jpg`;
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET)
-      .upload(storagePath, buffer, { contentType: "image/jpeg", cacheControl: "31536000" });
-    if (uploadError) fail(`Erro ao enviar ${folder}/${file}: ${uploadError.message}`);
+    // As fotos de exemplo já são pequenas: a mesma imagem serve para as duas versões
+    for (const key of [storagePath, storagePath.replace(/\.jpg$/, "-p.jpg")]) {
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(key, buffer, { contentType: "image/jpeg", cacheControl: "31536000" });
+      if (uploadError) fail(`Erro ao enviar ${folder}/${file}: ${uploadError.message}`);
+    }
 
     const { width, height } = jpegSize(buffer);
     rows.push({
       property_id: property.id,
       storage_path: storagePath,
-      url: supabase.storage.from(BUCKET).getPublicUrl(storagePath).data.publicUrl,
+      url: `/fotos/${storagePath}`,
       position: index,
       is_cover: index === 0,
       width,
@@ -68,7 +71,7 @@ for (const { folder, data } of properties) {
   console.log(`✔ ${property.code}  ${data.title}  (${rows.length} fotos)`);
 }
 
-console.log("\nSeed concluído.");
+console.log("\nSeed concluído. Publique o site para os imóveis aparecerem (veja o README).");
 
 // Lê largura e altura do cabeçalho de um JPEG (marcador SOF)
 function jpegSize(buffer) {

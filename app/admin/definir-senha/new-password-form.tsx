@@ -1,12 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { buttonPrimary, Field, inputClass } from "@/components/admin/ui";
+import { setNewPassword, type NewPasswordState } from "@/lib/admin/api";
 import { PASSWORD_MIN } from "@/lib/validation/team";
-import { setNewPassword, type NewPasswordState } from "../actions";
 
 export function NewPasswordForm({ email }: { email: string }) {
-  const [state, action, pending] = useActionState<NewPasswordState, FormData>(setNewPassword, undefined);
+  const router = useRouter();
+  const [state, action, pending] = useActionState<NewPasswordState, FormData>(async (prev, formData) => {
+    const result = await setNewPassword(prev, formData);
+    if (result?.ok) router.replace("/admin?aviso=senha-definida");
+    return result;
+  }, undefined);
   const errors = state?.errors ?? {};
 
   return (

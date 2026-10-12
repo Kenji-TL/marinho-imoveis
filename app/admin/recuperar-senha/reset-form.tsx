@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { buttonPrimary, inputClass, Notice } from "@/components/admin/ui";
-import { requestPasswordReset, type ResetState } from "../actions";
+import { requestPasswordReset, type ResetState } from "@/lib/admin/api";
 
 export function ResetForm() {
   const [state, action, pending] = useActionState<ResetState, FormData>(requestPasswordReset, undefined);

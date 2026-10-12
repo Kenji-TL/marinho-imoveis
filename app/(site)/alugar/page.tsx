@@ -8,6 +8,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/alugar" },
 };
 
-export default function RentPage({ searchParams }: PageProps<"/alugar">) {
-  return <ListingPage deal="rent" searchParams={searchParams} />;
+export default function RentPage() {
+  return <ListingPage deal="rent" />;
 }

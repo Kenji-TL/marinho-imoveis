@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Expand, ImageOff, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type TouchEvent } from "react";
 
-type Photo = { id: string; url: string; width: number | null; height: number | null };
+type Photo = { id: string; url: string; thumb: string; width: number | null; height: number | null };
 
 function useSwipe(onPrev: () => void, onNext: () => void) {
   const start = useRef<{ x: number; y: number } | null>(null);
@@ -126,7 +126,7 @@ export function Gallery({ photos, title }: { photos: Photo[]; title: string }) {
                 i === index ? "ring-2 ring-marinho-700 ring-offset-2" : "opacity-70 hover:opacity-100"
               }`}
             >
-              <Image src={photo.url} alt="" fill sizes="112px" className="object-cover" />
+              <Image src={photo.thumb} alt="" fill sizes="112px" className="object-cover" />
             </button>
           ))}
         </div>
@@ -178,7 +178,7 @@ export function Gallery({ photos, title }: { photos: Photo[]; title: string }) {
                   aria-label={`Ver foto ${i + 1}`}
                   className={`relative h-12 w-16 shrink-0 overflow-hidden rounded-md ${i === index ? "ring-2 ring-white" : "opacity-50 hover:opacity-90"}`}
                 >
-                  <Image src={photo.url} alt="" fill sizes="64px" className="object-cover" />
+                  <Image src={photo.thumb} alt="" fill sizes="64px" className="object-cover" />
                 </button>
               ))}
             </div>

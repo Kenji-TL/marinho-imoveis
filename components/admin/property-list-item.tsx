@@ -1,7 +1,7 @@
 import { EyeOff, ImageOff, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { PropertyListItem } from "@/lib/admin/queries";
+import type { PropertyListItem } from "@/lib/admin/api";
 import { formatBRL } from "@/lib/format";
 import { DEAL_LABEL, STATUS_LABEL } from "@/lib/property-options";
 import { PropertyRowActions } from "./property-row-actions";
@@ -32,11 +32,11 @@ export function StatusBadge({ status }: { status: PropertyListItem["status"] }) 
   );
 }
 
-export function PropertyListRow({ item }: { item: PropertyListItem }) {
+export function PropertyListRow({ item, onChanged }: { item: PropertyListItem; onChanged: () => void }) {
   const price = item.deal_type === "rent" ? item.rent_price : item.sale_price;
   return (
     <li className="flex items-center gap-2 p-3 sm:gap-3 sm:p-4">
-      <Link href={`/admin/imoveis/${item.id}`} className="flex min-w-0 flex-1 items-center gap-4">
+      <Link href={`/admin/imoveis/editar?id=${item.id}`} className="flex min-w-0 flex-1 items-center gap-4">
         <div className="relative size-16 shrink-0 overflow-hidden rounded-lg bg-areia-200 sm:h-16 sm:w-24">
           {item.cover_url ? (
             <Image src={item.cover_url} alt="" fill sizes="96px" className="object-cover" />
@@ -75,7 +75,7 @@ export function PropertyListRow({ item }: { item: PropertyListItem }) {
         </div>
       </Link>
       <div className="shrink-0 self-start sm:self-center">
-        <PropertyRowActions id={item.id} slug={item.slug} title={item.title} visible={item.visible} />
+        <PropertyRowActions id={item.id} slug={item.slug} title={item.title} visible={item.visible} onChanged={onChanged} />
       </div>
     </li>
   );

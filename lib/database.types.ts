@@ -42,6 +42,7 @@ export type Database = {
           amenities: string[];
           description: string | null;
           search_text: string | null;
+          status_changed_at: string;
           created_at: string;
           updated_at: string;
         };
@@ -78,6 +79,7 @@ export type Database = {
           total_area?: number | null;
           amenities?: string[];
           description?: string | null;
+          status_changed_at?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -180,6 +182,9 @@ export type Database = {
       };
       slugify: { Args: { value: string }; Returns: string };
       sync_property_images: { Args: { p_property_id: string; p_images: Json }; Returns: string[] };
+      site_snapshot: { Args: Record<PropertyKey, never>; Returns: Json };
+      purge_closed_property_photos: { Args: { p_days?: number }; Returns: string[] };
+      orphan_property_photos: { Args: { p_days?: number }; Returns: string[] };
     };
     Enums: {
       // "role" em admins é texto com check no banco; tipado aqui como união
